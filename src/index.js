@@ -2,6 +2,7 @@ import express from 'express';
 import morgan from 'morgan';
 import dotenv from 'dotenv';
 import cors from 'cors';
+import postsRoutes from './routes/postsRoutes.js';
 
 /* Creating an instance of the express application. */
 const app = express();
@@ -30,6 +31,8 @@ const corsOptions = {
 
 /* A middleware that enables cors. */
 //app.use(cors(corsOptions));
+
+app.use('/api/v1/posts', postsRoutes);
 
 /* Telling the server to listen on port 4000. */
 app.listen(PORT, () => {
