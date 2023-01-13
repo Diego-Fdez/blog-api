@@ -1,69 +1,108 @@
-import { db } from '../database/index.js';
+import { pool } from '../database/index.js';
 import jwt from 'jsonwebtoken';
 
-export const getPosts = (req, res) => {
-  const q = req.query.cat
-    ? 'SELECT * FROM posts WHERE cat=?'
-    : 'SELECT * FROM posts';
+export const getPosts = async (req, res) => {
+  try {
+    const [rows] = await pool.query('SELECT * FROM posts');
 
-  db.query(q, [req.query.cat], (err, data) => {
-    if (err) return res.status(500).send(err);
-
-    return res.status(200).json(data);
-  });
+    res.send({
+      status: 'OK',
+      data: rows,
+    });
+  } catch (error) {
+    res
+      .status(error?.status || 500)
+      .send({ status: 'FAILED', data: { error: error?.message || error } });
+  }
 };
 
-export const getPost = (req, res) => {
-  const q =
-    'SELECT p.id, `title`, `desc`, `cat`,`date` FROM posts WHERE p.id = ? ';
+export const getPost = async (req, res) => {
+  const { id } = req.params;
 
-  db.query(q, [req.params.id], (err, data) => {
-    if (err) return res.status(500).json(err);
+  if (!id) {
+    res.status(400).send({
+      status: 'FAILED',
+      data: { error: 'Parameter :Id is required' },
+    });
+    return;
+  }
 
-    return res.status(200).json(data[0]);
-  });
+  try {
+    const [rows] = await pool.query(`SELECT * FROM posts WHERE id = ?`, [id]);
+
+    if (rows.length <= 0) {
+      res.status(404).send({
+        status: 'FAILED',
+        data: { error: 'Post not found' },
+      });
+      return;
+    }
+
+    res.send({
+      status: 'OK',
+      data: rows[0],
+    });
+  } catch (error) {
+    res
+      .status(error?.status || 500)
+      .send({ status: 'FAILED', data: { error: error?.message || error } });
+  }
 };
 
-export const addPost = (req, res) => {
-  const q = 'INSERT INTO posts(`title`, `desc`, `cat`, `date`) VALUES (?)';
+export const addPost = async (req, res) => {
+  const { title, body, category, createdDate, createdBy } = req.body;
 
-  const values = [
-    req.body.title,
-    req.body.desc,
-    req.body.img,
-    req.body.cat,
-    req.body.date,
-  ];
-
-  db.query(q, [values], (err, data) => {
-    if (err) return res.status(500).json(err);
-    return res.json('Post has been created.');
-  });
+  try {
+    const [rows] = await pool.query(
+      'INSERT INTO posts (title, body, category, createdDate, createdBy) VALUES (?,?,?,?,?)',
+      [title, body, category, createdDate, createdBy]
+    );
+    res.send({
+      status: 'OK',
+      data: 'Post has been created.',
+    });
+  } catch (error) {
+    res
+      .status(error?.status || 500)
+      .send({ status: 'FAILED', data: { error: error?.message || error } });
+  }
 };
 
 export const updatePost = (req, res) => {
+  const { title, body, category, editedBy, editedDate } = req.body;
   const postId = req.params.id;
-  const q = 'UPDATE posts SET `title`=?,`desc`=?,`img`=?,`cat`=? WHERE `id`';
 
-  const values = [req.body.title, req.body.desc, req.body.img, req.body.cat];
+  if (!postId) {
+    res.status(400).send({
+      status: 'FAILED',
+      data: { error: 'Parameter :postId is required' },
+    });
+    return;
+  }
 
-  db.query(q, [...values, postId], (err, data) => {
-    if (err) return res.status(500).json(err);
-    return res.json('Post has been updated.');
-  });
+  try {
+  } catch (error) {
+    res
+      .status(error?.status || 500)
+      .send({ status: 'FAILED', data: { error: error?.message || error } });
+  }
 };
 
 export const deletePost = (req, res) => {
-  jwt.verify(token, 'jwtkey', (err, userInfo) => {
-    if (err) return res.status(403).json('Token is not valid!');
+  const postId = req.params.id;
 
-    const postId = req.params.id;
-    const q = 'DELETE FROM posts WHERE `id` = ? AND `uid` = ?';
-
-    db.query(q, [postId, userInfo.id], (err, data) => {
-      if (err) return res.status(403).json('You can delete only your post!');
-
-      return res.json('Post has been deleted!');
+  if (!postId) {
+    res.status(400).send({
+      status: 'FAILED',
+      data: { error: 'Parameter :postId is required' },
     });
-  });
+    return;
+  }
+
+  try {
+  } catch (error) {
+    res
+      .status(error?.status || 500)
+      .send({ status: 'FAILED', data: { error: error?.message || error } });
+  }
 };
