@@ -12,8 +12,8 @@ import {
 const router = express.Router();
 const cache = apicache.middleware;
 
-router.get('/:offSet', cache('2 minutes'), getPosts);
-router.get('/post/:id', getPost);
+router.get('/cat/:id', cache('2 minutes'), getPosts);
+router.get('/:id', getPost);
 router.post(
   '/',
   body('title', 'Post title is required').not().isEmpty(),
