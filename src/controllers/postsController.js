@@ -14,11 +14,9 @@ const checkBadWords = (word) => {
 
 /** It gets the posts from the database and sends them to the client */
 export const getPosts = async (req, res) => {
-  const {
-    params: { offSet },
-  } = req;
+  const { id } = req.params;
 
-  if (!offSet) {
+  if (!id) {
     res.status(400).send({
       status: 'FAILED',
       data: { error: 'No offset provided' },
@@ -28,7 +26,9 @@ export const getPosts = async (req, res) => {
 
   try {
     const [rows] = await pool.query(
-      `SELECT *, image_url FROM posts p INNER JOIN post_images i ON p.id = i.post_id ORDER BY createdAt desc LIMIT 10 OFFSET ${offSet}`
+      `SELECT p.id, p.title, p.body, c.description, i.image_url, p.createdAt, p.createdBy,
+      p.editedBy, p.editedAt FROM posts p INNER JOIN post_images i ON p.id = i.post_id INNER JOIN 
+      categories c ON p.category = c.id WHERE p.category = ${id}  ORDER BY p.createdAt desc LIMIT 10` //To Do OFFSET ${offSet}
     );
 
     res.send({
@@ -58,8 +58,9 @@ export const getPost = async (req, res) => {
 
   try {
     const [rows] = await pool.query(
-      `SELECT *, image_url FROM posts p INNER JOIN post_images i ON p.id = i.post_id WHERE p.id = ?`,
-      [id]
+      `SELECT p.id, p.title, p.body, c.description, i.image_url, p.createdAt, p.createdBy,
+      p.editedBy, p.editedAt FROM posts p INNER JOIN post_images i ON p.id = i.post_id INNER JOIN 
+      categories c ON p.category = c.id WHERE p.id = ${id}`
     );
 
     if (rows.length <= 0) {
