@@ -1,4 +1,4 @@
-CREATE DATABASE IF NOT EXISTS companydb;
+CREATE DATABASE IF NOT EXISTS blog;
 
 USE blog;
 
@@ -8,13 +8,21 @@ CREATE TABLE posts (
   body VARCHAR(300) NOT NULL,
   category INT(11) NOT NULL,
   createdBy VARCHAR(45) NOT NULL,
-  createdDate date NOT NULL,
+  createdAt TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   editedBy VARCHAR(45) DEFAULT NULL,
-  editedBy date DEFAULT NULL,
+  editedAt TIMESTAMP NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (id)
 );
+
+CREATE TABLE post_images (
+  id INT(11) NOT NULL AUTO_INCREMENT,
+  image_url VARCHAR(100) DEFAULT NULL,
+  post_id INT(11) NOT NULL,
+  PRIMARY KEY (id),
+  FOREIGN KEY (post_id) REFERENCES posts (id),
+)
 
 DESCRIBE posts;
 
 INSERT INTO posts VALUES
-(1, 'React', 'librería de JavaScript', 1, 'Diego', '12/1/2023')
+(1, 'React', 'librería de JavaScript', 1, 'Diego')
