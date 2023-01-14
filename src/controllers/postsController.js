@@ -1,9 +1,6 @@
 import { pool } from '../database/index.js';
 import { validationResult } from 'express-validator';
-import jwt from 'jsonwebtoken';
-
-/* An array of words that are not allowed to be used in the title or body of a post. */
-const badWords = ['nalgas', 'basura', 'trasero'];
+import { badWords } from '../utilities/badWordsDictionary.js';
 
 /** It creates a regular expression that matches any of the words in the array badWords, and then tests
  * the word passed to the function against that regular expression */
