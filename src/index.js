@@ -3,6 +3,7 @@ import morgan from 'morgan';
 import dotenv from 'dotenv';
 import cors from 'cors';
 import postsRoutes from './routes/postsRoutes.js';
+import categoriesRoutes from './routes/categoriesRoutes.js';
 
 /* Creating an instance of the express application. */
 const app = express();
@@ -33,8 +34,9 @@ const corsOptions = {
 //app.use(cors(corsOptions));
 
 app.use('/api/v1/posts', postsRoutes);
+app.use('/api/v1/categories', categoriesRoutes);
 
-/* Telling the server to listen on port 4000. */
+/* Telling the server to listen on port ?. */
 app.listen(PORT, () => {
   console.log(`Listening ${PORT}`);
 });
