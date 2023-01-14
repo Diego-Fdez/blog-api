@@ -2,6 +2,13 @@ CREATE DATABASE IF NOT EXISTS blog;
 
 USE blog;
 
+CREATE TABLE categories (
+  id INT(11) NOT NULL AUTO_INCREMENT,
+  description VARCHAR(60) NOT NULL,
+  createdAt TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (id)
+);
+
 CREATE TABLE posts (
   id INT(11) NOT NULL AUTO_INCREMENT,
   title VARCHAR(45) NOT NULL,
@@ -13,16 +20,12 @@ CREATE TABLE posts (
   editedAt TIMESTAMP NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (id)
 );
+ALTER TABLE posts add FOREIGN KEY (category) REFERENCES categories (id);
 
 CREATE TABLE post_images (
   id INT(11) NOT NULL AUTO_INCREMENT,
   image_url VARCHAR(100) DEFAULT NULL,
   post_id INT(11) NOT NULL,
-  PRIMARY KEY (id),
-  FOREIGN KEY (post_id) REFERENCES posts (id),
-)
-
-DESCRIBE posts;
-
-INSERT INTO posts VALUES
-(1, 'React', 'librería de JavaScript', 1, 'Diego')
+  PRIMARY KEY (id)
+);
+ALTER TABLE post_images add FOREIGN KEY (post_id) REFERENCES posts (id);
