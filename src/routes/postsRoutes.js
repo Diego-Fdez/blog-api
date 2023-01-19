@@ -12,10 +12,10 @@ import {
 const router = express.Router();
 const cache = apicache.middleware;
 
-router.get('/cat/:id', cache('2 minutes'), getPosts);
-router.get('/:id', getPost);
+router.get('/posts', cache('2 minutes'), getPosts);
+router.get('/post/:id', getPost);
 router.post(
-  '/',
+  '/post',
   body('title', 'Post title is required').not().isEmpty(),
   body('body', 'The body of the post is required').not().isEmpty(),
   body('category', 'Category is required').not().isEmpty(),
@@ -25,7 +25,7 @@ router.post(
   addPost
 );
 router.put(
-  '/:id',
+  '/post/:id',
   body('title', 'Post title is required').not().isEmpty(),
   body('body', 'The body of the post is required').not().isEmpty(),
   body('category', 'Category is required').not().isEmpty(),
@@ -37,6 +37,6 @@ router.put(
     .isEmpty(),
   updatePost
 );
-router.delete('/:id', deletePost);
+router.delete('/post/:id', deletePost);
 
 export default router;
