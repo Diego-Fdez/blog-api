@@ -1,6 +1,10 @@
+import jwt from 'jsonwebtoken';
+import dotenv from 'dotenv';
 import { pool } from '../database/index.js';
 import { validationResult } from 'express-validator';
 import { badWords } from '../utilities/badWordsDictionary.js';
+
+dotenv.config();
 
 /** It creates a regular expression that matches any of the words in the array badWords, and then tests
  * the word passed to the function against that regular expression */
@@ -11,21 +15,13 @@ const checkBadWords = (word) => {
 
 /** It gets the posts from the database and sends them to the client */
 export const getPosts = async (req, res) => {
-  const { id } = req.params;
-
-  if (!id) {
-    res.status(400).send({
-      status: 'FAILED',
-      data: { error: 'No offset provided' },
-    });
-    return;
-  }
+  const { category = 1, page = 0 } = req.query;
 
   try {
     const [rows] = await pool.query(
       `SELECT p.id, p.title, p.body, c.description, i.image_url, p.createdAt, p.createdBy,
       p.editedBy, p.editedAt FROM posts p INNER JOIN post_images i ON p.id = i.post_id INNER JOIN 
-      categories c ON p.category = c.id WHERE p.category = ${id}  ORDER BY p.createdAt desc LIMIT 10` //To Do OFFSET ${offSet}
+      categories c ON p.category = c.id WHERE p.category = ${category}  ORDER BY p.createdAt desc LIMIT 10 OFFSET ${page}`
     );
 
     res.send({
@@ -213,12 +209,31 @@ export const updatePost = async (req, res) => {
 
 /** It deletes a post and its images from the database returns The result of the query. */
 export const deletePost = async (req, res) => {
+  const token = req.cookies.access_token;
+  if (!token) {
+    res.status(401).send({
+      status: 'FAILED',
+      data: { error: 'Not authenticated!' },
+    });
+    return;
+  }
+
+  /* Checking if the token is valid. */
+  jwt.verify(token, process.env.JWT_SECRET, (error) => {
+    if (error)
+      res.status(403).send({
+        status: 'FAILED',
+        data: { error: 'Token is not valid!' },
+      });
+    return;
+  });
+
   const { id } = req.params;
 
   if (!id) {
-    res.status(400).send({
+    res.status(404).send({
       status: 'FAILED',
-      data: { error: 'Parameter :postId is required' },
+      data: { error: 'Post not found!' },
     });
     return;
   }
