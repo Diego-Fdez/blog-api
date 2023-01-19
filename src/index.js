@@ -4,6 +4,7 @@ import dotenv from 'dotenv';
 import cors from 'cors';
 import postsRoutes from './routes/postsRoutes.js';
 import categoriesRoutes from './routes/categoriesRoutes.js';
+import adminsRoutes from './routes/adminsRoutes.js';
 
 /* Creating an instance of the express application. */
 const app = express();
@@ -33,8 +34,9 @@ const corsOptions = {
 /* A middleware that enables cors. */
 //app.use(cors(corsOptions));
 
-app.use('/api/v1/posts', postsRoutes);
+app.use('/api/v1', postsRoutes);
 app.use('/api/v1/categories', categoriesRoutes);
+app.use('/api/v1/admins', adminsRoutes);
 
 /* Telling the server to listen on port ?. */
 app.listen(PORT, () => {
