@@ -2,6 +2,23 @@ CREATE DATABASE IF NOT EXISTS blog;
 
 USE blog;
 
+/**
+   * @openapi
+   * components:
+   *   schemas:
+   *     Admins:
+   *       type: object
+   *       properties:
+   *         email:
+   *           type: VARCHAR
+   *           example: example@mail.com
+   *         userName:
+   *           type: VARCHAR
+   *           example: John Doe
+   *         password:
+   *           type: VARCHAR
+   *           example: yourpassword
+   */
 CREATE TABLE admins (
   id INT(11) NOT NULL AUTO_INCREMENT,
   email VARCHAR(32) NOT NULL,
